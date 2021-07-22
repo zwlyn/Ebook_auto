@@ -117,19 +117,19 @@ class EbookScripy:
 		self.good_comment_num = 0
 		wc_page = self.driver.page_source.encode('utf-8')
 		self.comment_page_worker(wc_page)
-		time.sleep(1)
+		time.sleep(0.5)
 
 		self.driver.find_element_by_xpath("//span[contains(.,' 去哪儿')]").click()
-		time.sleep(1)
+		time.sleep(1.5)
 		qne_page = self.driver.page_source.encode('utf-8')
 		self.comment_page_worker(qne_page)
-		time.sleep(1)
+		time.sleep(0.5)
 
 		self.driver.find_element_by_xpath("//span[contains(.,' 同程旅行')]").click()
-		time.sleep(1)
+		time.sleep(1.5)
 		qne_page = self.driver.page_source.encode('utf-8')
 		self.comment_page_worker(qne_page)
-		time.sleep(1)
+		time.sleep(0.5)
 
 		self.record_comment_result(hotel_name)
 
@@ -138,8 +138,10 @@ class EbookScripy:
 
 	def run(self):
 		for cookie in cookie_list:
+			if cookie['name'] != "句容店":
+				continue
 			self.login(cookie['cookie'])
-			self.scripy_order(cookie['name'])
+			# self.scripy_order(cookie['name'])
 			self.scripy_comment(cookie['name'])
 			self.close_dirver()
 

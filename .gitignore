@@ -129,3 +129,6 @@ dmypy.json
 .pyre/
 
 cookie_storage.json
+result.txt
+dist/
+build/
