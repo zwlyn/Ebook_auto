@@ -64,8 +64,6 @@ class EbookScripy:
 		self.driver.find_element_by_xpath("//div[@id='divDateType']/ul/li[3]").click()
 		time.sleep(0.5)
 		self.driver.find_element_by_xpath("//div[@id='divordersearchcontrol']/div[2]/button[2]").click()
-		time.sleep(1)
-		target_element = self.driver.find_element_by_xpath("//div[@id='orderListDiv']/div[3]/ul/li/div/div")
 		time.sleep(0.5)
 		js = """
 		var element = document.getElementsByClassName('order-side ebk-scroll');
