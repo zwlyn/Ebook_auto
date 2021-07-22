@@ -138,10 +138,8 @@ class EbookScripy:
 
 	def run(self):
 		for cookie in cookie_list:
-			if cookie['name'] != "句容店":
-				continue
 			self.login(cookie['cookie'])
-			# self.scripy_order(cookie['name'])
+			self.scripy_order(cookie['name'])
 			self.scripy_comment(cookie['name'])
 			self.close_dirver()
 
