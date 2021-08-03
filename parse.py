@@ -2,33 +2,30 @@ from bs4 import BeautifulSoup
 import re
 import datetime
 
-
-today = datetime.datetime.now()
-yesterday =  datetime.datetime(today.year, today.month, today.day) - datetime.timedelta(days=1)
-def parse_order(page):
+def parse_order(page, date):
     """
-    page是订单界面的html
+    page是订单界面的html, byte格式
     """
-    global yesterday
     soup = BeautifulSoup(page, 'lxml')
     orderList = soup.find_all(class_='ordersSyn-list')[0]
     score = 0
     order_num = 0
     for order in orderList:
+        # print(order, i, type(soup))
         night_num = re.findall(r'''<strong data-bind="text: LiveDays&gt;0\? LiveDays: '-'">(\d+)</strong>''', str(order))
         room_num = re.findall(r'''<strong data-bind=" text: Quantity">(\d+)</strong>''', str(order))
         order_id = re.findall(r'''<span data-bind="text: OrderID">(\d+)</span>''', str(order))
-        date = re.findall(r'''<span data-bind="text: ArrivalAndDepartureDomestic">(\d+/\d+) - \d+/\d+</span>''', str(order))
-        if not night_num or not room_num or not order_id or not date:
+        order_date = re.findall(r'''<span data-bind="text: ArrivalAndDepartureDomestic">(\d+/\d+) - \d+/\d+</span>''', str(order))
+        if not night_num or not room_num or not order_id or not order_date:
             continue
-        if not ('已入住' in str(order) or '已接单' in str(order)):
+        if not ('已入住' in str(order) or '已接单' in str(order)) or "无效" in str(order):
             continue
-        date = date[0]
-        if int(date.split("/")[0]) != yesterday.month or int(date.split("/")[1]) != yesterday.day:  # 入住日期必须是昨天
+        order_date = order_date[0]
+        if int(order_date.split("/")[0]) != date.month or int(order_date.split("/")[1]) != date.day:  # 入住日期必须是昨天
             continue
         score += int(night_num[0]) * int(room_num[0])
         order_num += 1
-        print("晚数：", night_num[0], "间数：", room_num[0], "订单号：", order_id, "日期：", date)
+        print("晚数：", night_num[0], "间数：", room_num[0], "订单号：", order_id, "日期：", order_date)
 
     print("分数", score, "单数:", order_num)
     return score, order_num
@@ -43,27 +40,28 @@ def last_comment_date(commendList):
     return ret
 
 
-def need_next_page(last_date):
-    if (last_date - yesterday).total_seconds() < 0:
+def need_next_page(last_date, date):
+    if (last_date - date).total_seconds() < 0:
         return False
     return True
 
 
-def parse_comment(page):
-    global yesterday
+def parse_comment(page, date):
+    # with open("comment.html", "rb") as f:
+    #     page = f.read()
     soup = BeautifulSoup(page, 'lxml')
     commendList = soup.find_all(class_='cmt-item')
     last_date = last_comment_date(commendList)
-    need_next = need_next_page(last_date)
+    need_next = need_next_page(last_date, date)
     grades = []
     good_commend_num = 0 
     for commend in commendList:
         grade = commend.find_all(class_='mr5 txt26 ebk-c-Blue')
-        date = re.findall(r'发表于 : <span>(\d+-\d+-\d+)', str(commend.getText))
-        if not grade or not date:
+        order_date = re.findall(r'发表于 : <span>(\d+-\d+-\d+)', str(commend.getText))
+        if not grade or not order_date:
             continue
-        date = date[0]
-        if int(date.split("-")[1]) != yesterday.month or int(date.split("-")[2]) != yesterday.day:
+        order_date = order_date[0]
+        if int(order_date.split("-")[1]) != date.month or int(order_date.split("-")[2]) != date.day:
             continue
         grade = grade[0].text
         if float(grade) == 5.0:

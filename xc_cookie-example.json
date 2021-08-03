@@ -1,0 +1,16 @@
+[
+	{
+		"name": "你的店铺名称1",
+		"cookie":{
+			"cookie的key1": "cookie的value1",
+			"cookie的key2": "cookie的value2"
+		}
+	},
+	{
+		"name": "你的店铺名称2",
+		"cookie":{
+			"cookie的key1": "cookie的value1",
+			"cookie的key2": "cookie的value2"
+		}
+	}
+]

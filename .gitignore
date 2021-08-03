@@ -128,7 +128,10 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-cookie_storage.json
+
 result.txt
 dist/
 build/
+*.json
+!xc_cookie-example.json
+!mt_cookie-example.json

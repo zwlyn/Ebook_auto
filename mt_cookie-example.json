@@ -1,0 +1,16 @@
+ [
+ 	{
+	"name": "酒店名称1",
+	"cookie": "美团ebook的cookie xx",
+	"order_url": "https://eb.meituan.com/api/v1/ebooking/orders?_token=xxx?xx=xx...(美团订单访问的url)",
+	"comment_url": "https://eb.meituan.com/api/v1/ebooking/comments/commentsInfo?_token=xx?xx=xx...(美团评论访问的url)",
+	"dianpin_url": "https://eb.meituan.com/api/v1/ebooking/comments/commentsInfo?_token=xx?xx=xx...(美团点评评论访问的url)"
+	},
+ 	{
+	"name": "酒店名称2",
+	"cookie": "美团ebook的cookie xx",
+	"order_url": "https://eb.meituan.com/api/v1/ebooking/orders?_token=xxx?xx=xx...(美团订单访问的url)",
+	"comment_url": "https://eb.meituan.com/api/v1/ebooking/comments/commentsInfo?_token=xx?xx=xx...(美团评论访问的url)",
+	"dianpin_url": "https://eb.meituan.com/api/v1/ebooking/comments/commentsInfo?_token=xx?xx=xx...(美团点评评论访问的url)"
+	}
+]
