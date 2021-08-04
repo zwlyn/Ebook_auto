@@ -116,7 +116,7 @@ class XcEbookScripy:
 		self.driver.find_element_by_link_text('点评问答').click()
 		time.sleep(1)
 		self.driver.find_element_by_link_text('订单点评').click()
-		time.sleep(1)
+		time.sleep(2)
 		self.grades = []
 		self.good_comment_num = 0
 		wc_page = self.driver.page_source.encode('utf-8')
