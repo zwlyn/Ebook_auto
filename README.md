@@ -1,5 +1,5 @@
 # Ebook_auto
-## 携程商户后台自动化统计数据的小型自动化解决方案
+## 酒店商户后台自动化
 ### 实现的功能
 #### 图形化形式呈现
 ![out](https://user-images.githubusercontent.com/31677476/128104868-ffcdda24-adbe-4f36-b613-d0fad1a06d93.PNG)
