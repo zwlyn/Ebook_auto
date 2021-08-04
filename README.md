@@ -1,8 +1,11 @@
 # Ebook_auto
 ## 酒店商户后台自动化
+##### 让酒店后台管理员再也不用为多家店铺、多个平台每天的订单和好评统计而烦恼。
 ### 实现的功能
 #### 图形化形式呈现
 ![out](https://user-images.githubusercontent.com/31677476/128104868-ffcdda24-adbe-4f36-b613-d0fad1a06d93.PNG)
+
+#### 统计规则：昨天的入住订单总数和昨天的好评(5星)总数
 
 #### 携程的Ebook订单以及评论的自动化获取和统计
 - 1.用selenium自动化登录携程Ebook后台（需要提供该酒店携程ebook的cookie信息）；
