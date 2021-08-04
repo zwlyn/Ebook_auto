@@ -7,10 +7,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
 import time
 from bs4 import BeautifulSoup
-from parse import parse_order, parse_comment
+from utils.parse import parse_order, parse_comment
 import datetime
 
-with open("xc_cookie_storage.json", "r", encoding="utf-8") as f:
+with open("xc_cookie.json", "r", encoding="utf-8") as f:
 	cookie_list = json.load(f)
 
 class XcEbookScripy:

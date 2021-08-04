@@ -2,8 +2,8 @@ from tkinter import *
 import hashlib
 import threading
 import time
-from xcEbookScripy import XcEbookScripy
-from mtEbookScripy import MtEbookScripy
+from scripy.xcEbookScripy import XcEbookScripy
+from scripy.mtEbookScripy import MtEbookScripy
 import datetime
 import requests
 
