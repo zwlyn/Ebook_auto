@@ -1,6 +1,7 @@
 from tkinter import *
 import hashlib
 import threading
+import json
 import time
 from scripy.xcEbookScripy import XcEbookScripy
 from scripy.mtEbookScripy import MtEbookScripy
@@ -9,9 +10,40 @@ import requests
 
 LOG_LINE_NUM = 0
 
+def format_time(url):
+    url = re.sub(r'(startTime=\d+)&', 'startTime={startTime}', url)
+    return re.sub(r'(endTime=\d+)&', 'endTime={endTime}', url)
+
+def format_mt_cookie(mt_cookies):
+    for hotel in mt_cookies:
+        hotel['order_url'] = hotel['order_url'].replace('offset=0', "offset={number}").replace('limit=10', "limit=20")
+        hotel['order_url'] = format_time(hotel['order_url'])
+        hotel['comment_url'] = re.sub(r'limit=(\d+)&', '100', hotel['comment_url'])
+        hotel['dianpin_url'] = re.sub(r'limit=(\d+)&', '100', hotel['dianpin_url'])
+
+
 class MY_GUI():
     def __init__(self,init_window_name):
         self.init_window_name = init_window_name
+        self.load_cookies()
+        self.hotel_names = self.get_hotel_names()
+
+    def load_cookies(self):
+        with open("mt_cookie.json", "r", encoding="utf-8") as f:
+            self.mt_cookies = json.load(f)
+            format_mt_cookie(self.mt_cookies)
+
+        with open("xc_cookie.json", "r", encoding="utf-8") as f:
+            self.xc_cookies = json.load(f)
+
+    def get_hotel_names(self):
+        hotel_names = []
+        for cookie in self.mt_cookies:
+            hotel_names.append(cookie['name'])
+
+        for cookie in self.xc_cookies:
+            hotel_names.append(cookie['name'])
+        return list(set(hotel_names))
 
     #设置窗口
     def set_init_window(self):
@@ -27,12 +59,24 @@ class MY_GUI():
         self.log_label.grid(row=12, column=0)
 
         #文本框
+        self.hotel_select_frame = Frame(self.init_window_name, width=67, height=17)
+        self.hotel_select_frame.grid(row=2, column=2, rowspan=5, columnspan=5)
 
         self.init_data_frame = Frame(self.init_window_name, width=67, height=17)  #原始数据录入框
-        self.init_data_frame.grid(row=2, column=0, rowspan=5, columnspan=5)
+        self.init_data_frame.grid(row=4, column=0, rowspan=5, columnspan=5)
 
         self.init_data_frame2 = Frame(self.init_window_name, width=67, height=17)
-        self.init_data_frame2.grid(row=6, column=0, rowspan=5, columnspan=5)
+        self.init_data_frame2.grid(row=8, column=0, rowspan=5, columnspan=5)
+
+
+        Label(self.hotel_select_frame, text="酒店选择").pack()
+        self.hotel_var_map = {hotel_name: IntVar() for hotel_name in self.hotel_names}
+        for hotel_name in self.hotel_names:
+            self.hotel_var_map[hotel_name].set(1)
+            bt = Checkbutton(self.hotel_select_frame, text=hotel_name, variable=self.hotel_var_map[hotel_name], \
+                        onvalue=1, offvalue=0, height=2, width=20)
+            bt.pack()
+            
 
         Label(self.init_data_frame, text="日期选择").pack()
         self.date = StringVar()
@@ -74,7 +118,6 @@ class MY_GUI():
             return False
 
 
-
     #功能函数
     def start_scripy(self):
         if not self.test_network():
@@ -82,18 +125,18 @@ class MY_GUI():
         self.write_log_to_Text("INFO:启动成功")
         date = self.date.get()
         target = self.target.get()
-
+        selected_hotel_names = [hotel_name for hotel_name in self.hotel_var_map if self.hotel_var_map[hotel_name].get()]
         if target == "携程":
             inputData = "输入数据：{date} {target} \n".format(date=self.date.get(), target=self.target.get())
             self.result_data_Text.insert(1.0, inputData)
-            xcEbookScripy = XcEbookScripy()
-            threading.Thread(target=xcEbookScripy.run, args=(self.dateFromat(date), self.result_data_Text)).start()
+            xcEbookScripy = XcEbookScripy(self.xc_cookies)
+            threading.Thread(target=xcEbookScripy.run, args=(self.dateFromat(date), self.result_data_Text, selected_hotel_names)).start()
 
         elif target == "美团":
             inputData = "输入数据：{date} {target} \n".format(date=self.date.get(), target=self.target.get())
             self.result_data_Text.insert(1.0, inputData)
-            mtEbookScripy = MtEbookScripy()
-            threading.Thread(target=mtEbookScripy.run, args=(self.dateFromat(date), self.result_data_Text)).start()
+            mtEbookScripy = MtEbookScripy(self.mt_cookies)
+            threading.Thread(target=mtEbookScripy.run, args=(self.dateFromat(date), self.result_data_Text, selected_hotel_names)).start()
         
         else: 
             self.write_log_to_Text("INFO:尚未制作，敬请期待")

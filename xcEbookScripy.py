@@ -7,13 +7,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
 import time
 from bs4 import BeautifulSoup
-from utils.parse import parse_order, parse_comment
+from parse import parse_order, parse_comment
 import datetime
 
+with open("xc_cookie_storage.json", "r", encoding="utf-8") as f:
+	cookie_list = json.load(f)
 
 class XcEbookScripy:
-	def __init__(self, cookies):
-		self.cookies = cookies
+	def __init__(self):
 		self.date_str = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
 		self.record_path = "result.txt"
 		self.create_record_file()
@@ -115,7 +116,7 @@ class XcEbookScripy:
 		self.driver.find_element_by_link_text('点评问答').click()
 		time.sleep(1)
 		self.driver.find_element_by_link_text('订单点评').click()
-		time.sleep(2)
+		time.sleep(1)
 		self.grades = []
 		self.good_comment_num = 0
 		wc_page = self.driver.page_source.encode('utf-8')
@@ -144,19 +145,18 @@ class XcEbookScripy:
 		today = datetime.datetime.now()
 		return datetime.datetime(today.year, today.month, today.day) - datetime.timedelta(days=1)
 
-	def run(self, date=None, cache=None, selected_hotel_names=[]):
+	def run(self, date=None, cache=None):
 		self.cache = cache
 		if date:
 			self.date_str = date.strftime("%Y-%m-%d")
 		if not date:
 			date = self.yesterday_date()
-		for cookie in self.cookies:
-			if cookie['name'] in selected_hotel_names:
-				self.login(cookie['cookie'])
-				self.scripy_order(cookie['name'], date)
-				self.scripy_comment(cookie['name'], date)
-				self.close_dirver()
-		self.cache.insert(1.0, "携程抓取 运行结束\n")
+		for cookie in cookie_list:
+			self.login(cookie['cookie'])
+			self.scripy_order(cookie['name'], date)
+			self.scripy_comment(cookie['name'], date)
+			self.close_dirver()
+		self.cache.insert(1.0, "{data}携程抓取 运行结束".format(date=self.date_str))
 
 if __name__ == '__main__':
 	ebookScripy = EbookScripy()

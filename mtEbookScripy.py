@@ -25,9 +25,20 @@ def format_time(url):
 	return re.sub(r'(endTime=\d+)&', 'endTime={endTime}', url)
 
 
+def format_mt_cookie(hotels):
+	for hotel in hotels:
+		hotel['order_url'] = hotel['order_url'].replace('offset=0', "offset={number}").replace('limit=10', "limit=20")
+		hotel['order_url'] = format_time(hotel['order_url'])
+		hotel['comment_url'] = re.sub(r'limit=(\d+)&', '100', hotel['comment_url'])
+		hotel['dianpin_url'] = re.sub(r'limit=(\d+)&', '100', hotel['dianpin_url'])
+
+with open("mt_cookie.json", "r", encoding="utf-8") as f:
+	hotels = json.load(f)
+	format_mt_cookie(hotels)
+
+
 class MtEbookScripy:
-	def __init__(self, hotels):
-		self.hotels = hotels
+	def __init__(self):
 		self.record_path = "result.txt"
 		self.create_record_file()
 		self.logo = " [美团] "
@@ -117,11 +128,9 @@ class MtEbookScripy:
 		# print("好评数：", good_num)s
 		self.record_comment_result(hotel['name'], good_num)
 
-	def run(self, date=None, cache=None, selected_hotel_names=[]):
+	def run(self, date=None, cache=None):
 		self.cache = cache
 		self.date_str = date.strftime("%Y-%m-%d")
-		for hotel in self.hotels:
-			if hotel['name'] in selected_hotel_names:
-				self.mt_scripy(hotel, date)
-		self.cache.insert(1.0, "美团抓取 运行结束\n")
+		for hotel in hotels:
+			self.mt_scripy(hotel, date)
 
