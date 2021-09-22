@@ -7,25 +7,27 @@ from scripy.xcEbookScripy import XcEbookScripy
 from scripy.mtEbookScripy import MtEbookScripy
 import datetime
 import requests
+import re
 
 LOG_LINE_NUM = 0
 
 def format_time(url):
-    url = re.sub(r'(startTime=\d+)&', 'startTime={startTime}', url)
-    return re.sub(r'(endTime=\d+)&', 'endTime={endTime}', url)
+    url = re.sub(r'startTime=\d+&', 'startTime={startTime}&', url)
+    return re.sub(r'endTime=\d+&', 'endTime={endTime}&', url)
 
 def format_mt_cookie(mt_cookies):
     for hotel in mt_cookies:
         hotel['order_url'] = hotel['order_url'].replace('offset=0', "offset={number}").replace('limit=10', "limit=20")
         hotel['order_url'] = format_time(hotel['order_url'])
-        hotel['comment_url'] = re.sub(r'limit=(\d+)&', '100', hotel['comment_url'])
-        hotel['dianpin_url'] = re.sub(r'limit=(\d+)&', '100', hotel['dianpin_url'])
+        hotel['comment_url'] = re.sub(r'limit=\d+&', 'limit=100&', hotel['comment_url'])
+        hotel['dianpin_url'] = re.sub(r'limit=\d+&', 'limit=100&', hotel['dianpin_url'])
 
 
 class MY_GUI():
     def __init__(self,init_window_name):
         self.init_window_name = init_window_name
         self.load_cookies()
+        print(self.mt_cookies)
         self.hotel_names = self.get_hotel_names()
 
     def load_cookies(self):

@@ -77,6 +77,7 @@ class MtEbookScripy:
 			url = order_url.format(startTime=start_time, endTime=end_time, number=number)
 			number += 20
 			r = requests.get(url, headers=headers)
+			print(r.text)
 			data = r.json()['data']
 			order_list += data['results']
 			print(data['total'], number)

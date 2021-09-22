@@ -8,6 +8,7 @@ from selenium.webdriver import ActionChains
 import time
 from bs4 import BeautifulSoup
 from utils.parse import parse_order, parse_comment
+from utils import move_to_gap, get_track
 import datetime
 
 
@@ -43,13 +44,59 @@ class XcEbookScripy:
 	def delete_all_cookies(self):
 		self.driver.delete_all_cookies()
 
-	def login(self, cookie):
+	def login(self, username, password):
 		self.create_driver()
 		self.delete_all_cookies()
-		self.driver.get('https://ebooking.ctrip.com/ebkfinance/settlement/homePage')
-		for k, v in cookie.items():
-			self.driver.add_cookie({'name': k, 'value': v, 'Domain': 'ebooking.ctrip.com'})
-		self.driver.refresh()
+		self.driver.get("https://ebooking.ctrip.com/ebkovsassembly/Login")
+		username_element = self.driver.find_element_by_id("loginName")
+		username_element.clear()
+		username_element.send_keys(username);
+		time.sleep(0.5)
+		password_element = self.driver.find_element_by_id("password")
+		password_element.clear()
+		password_element.send_keys(password);
+		time.sleep(0.5)
+		self.driver.find_element_by_xpath("//button[contains(.,'登录')]").click()
+		time.sleep(1)
+		self.cross_check()
+		self.wait_when_word()
+
+	def wait_when_word(self):
+		try:
+			print("有文字校验")
+			while True:
+				self.driver.find_element_by_xpath("//div[@id='verification-code-choose']/div[2]/div")
+				time.sleep(1)
+
+		except Exception as e:
+			print(e, "没有文字校验")
+
+	def cross_check(self):
+		try:
+			check_element = self.driver.find_element_by_xpath("//div[@id='verification-code']/div/div[2]/div/i")
+			move_to_gap(self.driver, check_element, get_track(1000))
+		except Exception as e:
+			print(e)
+
+	def refresh_cookie(self, name):
+		time.sleep(2)
+		cookie_json=self.driver.get_cookies()
+		def format_cookie(cookies):
+			result = {}
+			for item in cookies:
+				result[item['name']] = item['value']
+			return result
+
+		new_cookie = format_cookie(cookie_json)
+		print(new_cookie, '------1')
+		for cookie in self.cookies:
+			if cookie['name'] == name:
+				print(cookie['cookie'], '------2')
+				cookie['cookie'] = new_cookie
+				break
+
+		with open("xc_cookie.json", 'w', encoding='utf-8') as f:
+			f.write(json.dumps(self.cookies, indent=4, ensure_ascii=False))
 
 	def scripy_order(self, hotel_name, date):
 		time.sleep(0.5)
@@ -59,11 +106,15 @@ class XcEbookScripy:
 		time.sleep(1)
 		self.driver.find_element_by_link_text('订单查询').click()
 		time.sleep(1)
-		self.driver.find_element_by_xpath("//button[@id='btnDateType']/em").click()
-		time.sleep(0.5)
-		self.driver.find_element_by_xpath("//div[@id='divDateType']/ul/li[3]").click()
-		time.sleep(0.5)
-		self.driver.find_element_by_xpath("//div[@id='divordersearchcontrol']/div[2]/button[2]").click()
+		# self.driver.find_element_by_xpath("//button[@id='btnDateType']/em").click()
+		# time.sleep(0.5)
+		# self.driver.find_element_by_xpath("//div[@id='divDateType']/ul/li[3]").click()
+		# time.sleep(0.5)
+		# self.driver.find_element_by_link_text('更多').click()
+		# time.sleep(0.5)
+		self.driver.find_element_by_xpath("//span[contains(.,'过去7天')]").click()
+		# time.sleep(0.5)
+		# self.driver.find_element_by_xpath("//li[contains(.,'已接单')]").click()
 		time.sleep(2)
 		target_element = self.driver.find_element_by_xpath("//div[@id='orderListDiv']")
 		time.sleep(0.5)
@@ -152,10 +203,11 @@ class XcEbookScripy:
 			date = self.yesterday_date()
 		for cookie in self.cookies:
 			if cookie['name'] in selected_hotel_names:
-				self.login(cookie['cookie'])
+				self.login(cookie['username'], cookie['password'])
 				self.scripy_order(cookie['name'], date)
 				self.scripy_comment(cookie['name'], date)
 				self.close_dirver()
+
 		self.cache.insert(1.0, "携程抓取 运行结束\n")
 
 if __name__ == '__main__':
