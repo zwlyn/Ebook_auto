@@ -26,10 +26,9 @@
 + BeautifulSoup
 
 ## 使用说明
- + 1.若使用携程，在xc_cookie.json中存储携程Ebook平台中酒店名称和cookie值;
- + 2.若使用美团，在mt_cookie.json中存储美团Ebook平台中酒店的名称、cookie值、订单地址、评论和点评地址（仅适合舒适型酒店后台）;
+ + 1.若使用携程，在xc_cookie.json中存储携程Ebook平台中酒店名称和商户的账号密码，详情见xc_cookie-exapmle.json;
+ + 2.若使用美团，在mt_cookie.json中存储美团Ebook平台中酒店的名称、cookie值、订单地址、评论和点评地址（仅适合舒适型酒店后台）详情见mt_cookie-example.json;
  + 2.python main.py
 
 ## 注意点
-- 获取Ebook后台的cookie时可在开发者工具中拷贝后使用format_cookie.py这个工具文件来将cookie进行格式化
 - 请勿将该仓库的代码用于违法和商业用途仅用于学习和交流
