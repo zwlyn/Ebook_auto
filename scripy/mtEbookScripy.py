@@ -110,6 +110,9 @@ class MtEbookScripy:
 		comment_list += r.json()['data']['commentList']
 		good_num = 0
 		for comment in comment_list:
+			if comment['score'] == 50:
+				print(comment, "<debug>")
+		for comment in comment_list:
 			if comment['commentTime'] / 1000 < date.timestamp() or \
 			   comment['commentTime'] / 1000 > (date + datetime.timedelta(days=1) - datetime.timedelta(seconds=1)).timestamp():
 			   continue
