@@ -172,13 +172,13 @@ class XcEbookScripy:
 		self.good_comment_num = 0
 		wc_page = self.driver.page_source.encode('utf-8')
 		self.comment_page_worker(wc_page, date)
-		time.sleep(1)
+		time.sleep(2)
 
 		self.driver.find_element_by_xpath("//span[contains(.,' 去哪儿')]").click()
 		time.sleep(1)
 		qne_page = self.driver.page_source.encode('utf-8')
 		self.comment_page_worker(qne_page, date)
-		time.sleep(1)
+		time.sleep(2)
 
 		self.driver.find_element_by_xpath("//span[contains(.,' 同程旅行')]").click()
 		time.sleep(1)
@@ -205,6 +205,7 @@ class XcEbookScripy:
 		for cookie in self.cookies:
 			if cookie['name'] in selected_hotel_names:
 				self.login(cookie['username'], cookie['password'])
+				time.sleep(3)
 				self.scripy_order(cookie['name'], date)
 				self.scripy_comment(cookie['name'], date)
 				self.close_dirver()

@@ -6,7 +6,8 @@ def parse_order(page, date):
     """
     page是订单界面的html, byte格式
     """
-    soup = BeautifulSoup(page, 'lxml')
+    # soup = BeautifulSoup(page, 'lxml')
+    soup = BeautifulSoup(page, features='html.parser')
     orderList = soup.find_all(class_='ordersSyn-list')[0]
     score = 0
     order_num = 0
@@ -49,7 +50,8 @@ def need_next_page(last_date, date):
 def parse_comment(page, date):
     # with open("comment.html", "rb") as f:
     #     page = f.read()
-    soup = BeautifulSoup(page, 'lxml')
+    # soup = BeautifulSoup(page, 'lxml')
+    soup = BeautifulSoup(page, features='html.parser')
     commendList = soup.find_all(class_='cmt-item')
     last_date = last_comment_date(commendList)
     need_next = need_next_page(last_date, date)
