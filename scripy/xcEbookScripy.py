@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 from utils.parse import parse_order, parse_comment
 from utils import move_to_gap, get_track
 import datetime
+from selenium.webdriver.common.action_chains import ActionChains
 
 
 class XcEbookScripy:
@@ -47,6 +48,7 @@ class XcEbookScripy:
 	def login(self, username, password):
 		self.create_driver()
 		self.delete_all_cookies()
+		self.driver.maximize_window()
 		self.driver.get("https://ebooking.ctrip.com/ebkovsassembly/Login")
 		username_element = self.driver.find_element_by_id("loginName")
 		username_element.clear()
@@ -99,22 +101,21 @@ class XcEbookScripy:
 			f.write(json.dumps(self.cookies, indent=4, ensure_ascii=False))
 
 	def scripy_order(self, hotel_name, date):
-		time.sleep(0.5)
-		self.driver.find_element_by_link_text('财务结算').click()
+		while True:
+			try:
+				time.sleep(0.5)
+				self.driver.find_element_by_link_text('财务结算').click()
+				break
+			except Exception:
+				self.driver.find_element_by_xpath("/html/body").click() # 鼠标左键点击， 200为x坐标， 100为y坐标
+				time.sleep(1)
+		
 		time.sleep(1)
 		self.driver.find_element_by_link_text('订单处理').click()
 		time.sleep(1)
 		self.driver.find_element_by_link_text('订单查询').click()
 		time.sleep(1)
-		# self.driver.find_element_by_xpath("//button[@id='btnDateType']/em").click()
-		# time.sleep(0.5)
-		# self.driver.find_element_by_xpath("//div[@id='divDateType']/ul/li[3]").click()
-		# time.sleep(0.5)
-		# self.driver.find_element_by_link_text('更多').click()
-		# time.sleep(0.5)
 		self.driver.find_element_by_xpath("//span[contains(.,'过去7天')]").click()
-		# time.sleep(0.5)
-		# self.driver.find_element_by_xpath("//li[contains(.,'已接单')]").click()
 		time.sleep(2)
 		target_element = self.driver.find_element_by_xpath("//div[@id='orderListDiv']")
 		time.sleep(0.5)
